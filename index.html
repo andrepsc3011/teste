@@ -1,34 +1,40 @@
 <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Formulário</title>
-    </head>
-    <body>
-      <form id="myForm" enctype="multipart/form-data">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome"><br><br>
+<html>
+<head>
+    <title>Formulário de Upload</title>
+</head>
+<body>
+    <h2>Envie seus dados</h2>
+    <form id="myForm">
+        <label for="name">Nome:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="file">Anexo (PDF/Imagem):</label><br>
+        <input type="file" id="file" name="file" accept=".pdf,.png,.jpg,.jpeg" required><br><br>
+        
+        <input type="submit" value="Enviar">
+    </form>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email"><br><br>
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('file', document.getElementById('file').files[0]);
 
-        <label for="myFile">Imagem:</label>
-        <input type="file" id="myFile" name="myFile"><br><br>
-
-        <button type="submit">Enviar</button>
-      </form>
-
-      <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxBaXRSuySaaGHo3Xepye4I1XMYl86YEW8EAnUi6V-Rk0dzNuQ5DnTW18tl5TyTCNML/exec'; // Substitua pelo URL do seu script
-
-        const form = document.forms['myForm'];
-
-        form.addEventListener('submit', e => {
-          e.preventDefault();
-          let formData = new FormData(form);
-          fetch(scriptURL, { method: 'POST', body: formData })
-            .then(response => alert('Sucesso!'))
-            .catch(error => alert('Erro!', error.message));
+            fetch('https://script.google.com/macros/s/AKfycbyUr9r3MPesfgOKqe-JtXkWPo1NHiqXamSxTf2oOMvwU2YtWWykW-u-lUM_Epd9-XQW/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(message => alert(message))
+            .catch(error => console.error('Erro:', error));
         });
-      </script>
-    </body>
-    </html>
+    </script>
+</body>
+</html>
