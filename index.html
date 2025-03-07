@@ -10,7 +10,7 @@
     <header>
         <img src="../static/images/logo.png" alt="Transportes Ari" class="logo">
         <h1>Transportes Ari</h1>
-        <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
+        <p>Olá amigo motorista, como está? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
     </header>
     <div class="container">
         <h2>Envio de Documentos de viagem</h2>
@@ -40,36 +40,55 @@
         <p>&copy; 2025 Transportes Ari - Todos os direitos reservados</p>
     </footer>
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const tipo = document.getElementById('tipo').value;
-            const placa = document.getElementById('placa').value;
-            const file = document.getElementById('file').files[0];
 
-            if (!file) {
-                document.getElementById('status').innerText = "Por favor, selecione um arquivo.";
-                return;
-            }
+                //const response = await fetch('https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec', {
+                  document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const tipo = document.getElementById('tipo').value;
+    const placa = document.getElementById('placa').value;
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files[0];
 
-            document.getElementById('status').innerText = "Enviando...";
+    if (!file) {
+        document.getElementById('status').innerText = "Por favor, selecione um arquivo.";
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append('tipo', tipo);
-            formData.append('placa', placa);
-            formData.append('file', file);
+    document.getElementById('status').innerText = "Enviando...";
 
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec', {
-                    method: 'POST',
-                    body: formData
-                });
+    // Leia o arquivo como base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async function() {
+        const base64Data = reader.result.split(",")[1]; // Remove o cabeçalho do base64
+        const fileName = file.name;
+        const mimeType = file.type;
 
-                const result = await response.json();
-                document.getElementById('status').innerText = result.message;
-            } catch (error) {
-                document.getElementById('status').innerText = "Erro ao enviar.";
-            }
-        });
+        const payload = {
+            tipo: tipo,
+            placa: placa,
+            file: base64Data,
+            fileName: fileName,
+            mimeType: mimeType
+        };
+
+        try {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            document.getElementById('status').innerText = result.message;
+        } catch (error) {
+            document.getElementById('status').innerText = "Erro ao enviar.";
+        }
+    };
+});
+
 
     </script>
 </body>
