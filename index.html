@@ -7,7 +7,7 @@
   <title>Upload para Google Drive</title>
 </head>
 <body>
-<h2>Envie seu Arquivo - 17</h2>
+<h2>Envie seu Arquivo - 9</h2>
 <form id="uploadForm">
   <label>Nome:</label>
   <input type="text" id="name" required><br>
@@ -38,12 +38,17 @@ document.getElementById("uploadForm").onsubmit = async function (e) {
   reader.onloadend = async function () {
     const base64 = reader.result.split(",")[1];
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxVCIApvlfO_nRce1Fyvtal6TYz1d35NCsEMvMqPHoom5jGS9Y036n07E3e1Ygv8TzNuQ/exec", {
+
+
+    await fetch("https://script.google.com/macros/s/AKfycbxVCIApvlfO_nRce1Fyvtal6TYz1d35NCsEMvMqPHoom5jGS9Y036n07E3e1Ygv8TzNuQ/exec", {
       method: "POST",
-      mode: "cors", // ADICIONE ESSA LINHA
-      headers: { "Content-Type": "application/json" },
+      mode: "cors", // CORS agora vai funcionar!
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ name, email, file: base64, fileName: file.name })
     });
+
 
     if (response.ok) {
       alert("Arquivo enviado com sucesso!");
