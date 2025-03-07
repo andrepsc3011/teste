@@ -10,7 +10,7 @@
     <header>
         <img src="../static/images/logo.png" alt="Transportes Ari" class="logo">
         <h1>Transportes Ari</h1>
-        <p>Olá amigo motorista, como está hoje? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
+        <p>Olá amigo motorista, como estás? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
     </header>
     <div class="container">
         <h2>Envio de Documentos de viagem</h2>
@@ -41,6 +41,7 @@
     </footer>
     <script>
 
+                // https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec
                 // https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec
                   document.getElementById('uploadForm').addEventListener('submit', async function(event) {
     event.preventDefault();
@@ -73,7 +74,8 @@
         };
 
         try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec', {
+            
+            const response = await fetch('https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbygb0PlBI0kDq4HsA-uxx7lSVnO7OkS1c1Ozmwek8cmo2yaUmypDIuX_RI4fU5Z_idGug/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
