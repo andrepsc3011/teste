@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados11</h2>
+    <h2>Envie seus dados</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -18,30 +18,58 @@
         <input type="submit" value="Enviar">
     </form>
 
-<script>
-document.getElementById('myForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Verificação adicional de arquivo
-    const fileInput = document.getElementById('file');
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Por favor, selecione um arquivo antes de enviar!');
-        return;
-    }
+    <!-- Área de debug -->
+    <h3>Dados Capturados:</h3>
+    <pre id="debug"></pre>
 
-    const formData = new FormData();
-    formData.append('name', document.getElementById('name').value);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('file', fileInput.files[0]);
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Captura os valores dos campos
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const file = document.getElementById('file').files[0];
+            
+            // Debug visual
+            const debugContent = `
+                Nome: ${name}
+                Email: ${email}
+                Arquivo selecionado: ${file ? file.name : 'Nenhum'}
+                Tipo de arquivo: ${file ? file.type : 'N/A'}
+                Tamanho: ${file ? file.size : '0'} bytes
+            `;
+            document.getElementById('debug').textContent = debugContent;
+            console.log('Valores capturados:', {name, email, file});
 
-    fetch('https://script.google.com/macros/s/AKfycbx37b4w8P3edJ51GwZ27aKcasLPcwQdFQqImgTQrNjRg9B5LgU1A0FuTrqCL2W2CpUi/exec', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(message => alert(message))
-    .catch(error => console.error('Erro:', error));
-});
-</script>
+            // Cria o FormData
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            if (file) formData.append('file', file);
+
+            // Debug do FormData
+            const formDataDebug = [];
+            for (const [key, value] of formData.entries()) {
+                formDataDebug.push(`${key}: ${value}`);
+            }
+            console.log('Conteúdo do FormData:', formDataDebug.join('\n'));
+
+            // Envio dos dados
+            fetch('https://script.google.com/macros/s/AKfycbx37b4w8P3edJ51GwZ27aKcasLPcwQdFQqImgTQrNjRg9B5LgU1A0FuTrqCL2W2CpUi/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                document.getElementById('debug').textContent += `\n\nResposta: ${message}`;
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('debug').textContent += `\n\nERRO: ${error.message}`;
+            });
+        });
+    </script>
 </body>
 </html>
