@@ -7,7 +7,7 @@
   <title>Upload para Google Drive</title>
 </head>
 <body>
-<h2>Envie seu Arquivo - 1</h2>
+<h2>Envie seu Arquivo - 2</h2>
 <form id="uploadForm">
   <label>Nome:</label>
   <input type="text" id="name" required><br>
@@ -38,7 +38,7 @@ document.getElementById("uploadForm").onsubmit = async function (e) {
   reader.onloadend = async function () {
     const base64 = reader.result.split(",")[1];
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwjHMGgrNde1Uc4KxlOZ093AZ07YJPCN3sIdbT58awDkETwOksdi_5DDzxLkY3MoZM5/exec", {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzLzgj_peO1G0mzlR2GS9rKmQ2x0A0F2APxqrTPrJLbWpTS68eF9BW2v14Ym0ZU57Gn/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, file: base64, fileName: file.name })
