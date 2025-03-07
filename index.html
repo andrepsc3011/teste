@@ -6,7 +6,7 @@
     <title>Upload para Google Drive1</title>
 </head>
 <body>
-<h1>Upload para Google Drive17</h1>
+<h1>Upload para Google Drive30</h1>
 <form id="form">
     <label>Nome:</label>
     <input type="text" id="name" required><br><br>
@@ -35,7 +35,7 @@ document.getElementById("form").onsubmit = async function (e) {
     const base64 = reader.result.split(",")[1];
 
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwfryLDkhmd_oRSftYiblivTXT26vvq52t0X7FmbWTxQImwK7ehI9-VUR335ZpD-KmCqg/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyhO0863JfXbAEK4QoaOa6MH5hnFV93_dH_rNoRn_t9L5FE8VFMISZz4mGVqmbkRlji8g/exec", {
       method: "POST",
       mode: "no-cors", // Isso elimina o erro de CORS, mas torna a resposta opaca
       headers: {
