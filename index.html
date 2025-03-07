@@ -38,7 +38,7 @@ document.getElementById("uploadForm").onsubmit = async function (e) {
   reader.onloadend = async function () {
     const base64 = reader.result.split(",")[1];
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbzLzgj_peO1G0mzlR2GS9rKmQ2x0A0F2APxqrTPrJLbWpTS68eF9BW2v14Ym0ZU57Gn/exec", {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxVCIApvlfO_nRce1Fyvtal6TYz1d35NCsEMvMqPHoom5jGS9Y036n07E3e1Ygv8TzNuQ/exec", {
       method: "POST",
       mode: "cors", // ADICIONE ESSA LINHA
       headers: { "Content-Type": "application/json" },
