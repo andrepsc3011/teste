@@ -23,53 +23,33 @@
     <pre id="debug"></pre>
 
     <script>
-        document.getElementById('myForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Captura os valores dos campos
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const file = document.getElementById('file').files[0];
-            
-            // Debug visual
-            const debugContent = `
-                Nome: ${name}
-                Email: ${email}
-                Arquivo selecionado: ${file ? file.name : 'Nenhum'}
-                Tipo de arquivo: ${file ? file.type : 'N/A'}
-                Tamanho: ${file ? file.size : '0'} bytes
-            `;
-            document.getElementById('debug').textContent = debugContent;
-            console.log('Valores capturados:', {name, email, file});
+document.getElementById('myForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this); // Captura todos os campos automaticamente
 
-            // Cria o FormData
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            if (file) formData.append('file', file);
+    // Debug visual
+    const debugContent = `
+        Enviando dados...
+        Nome: ${this.name.value}
+        Email: ${this.email.value}
+        Arquivo: ${this.file.files[0].name}
+    `;
+    document.getElementById('debug').textContent = debugContent;
 
-            // Debug do FormData
-            const formDataDebug = [];
-            for (const [key, value] of formData.entries()) {
-                formDataDebug.push(`${key}: ${value}`);
-            }
-            console.log('Conteúdo do FormData:', formDataDebug.join('\n'));
-
-            // Envio dos dados
-            fetch('https://script.google.com/macros/s/AKfycbwpR2g5QgAWjzLE4lBwOjVOSypj5KalUSckKHq56xwCXN-SAuD1Lfc6QEIkcbM06WKg/exec', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(message => {
-                alert(message);
-                document.getElementById('debug').textContent += `\n\nResposta: ${message}`;
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                document.getElementById('debug').textContent += `\n\nERRO: ${error.message}`;
-            });
-        });
-    </script>
+    fetch('https://script.google.com/macros/s/AKfycbxG5KOfFsF1KJdNfsRDoGKcHSN95D8b-5WU0hq6GhxPzzc1NOXtwjofLwQ2a6VNcvsumQ/exec', {
+        method: 'POST',
+        body: formData,
+        // NÃO adicione headers manualmente
+    })
+    .then(response => response.text())
+    .then(message => {
+        document.getElementById('debug').textContent += `\n\nResposta: ${message}`;
+    })
+    .catch(error => {
+        document.getElementById('debug').textContent += `\n\nERRO: ${error.message}`;
+    });
+});
+</script>
 </body>
 </html>
