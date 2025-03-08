@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados vai</h2>
+    <h2>Envie seus dados</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -54,10 +54,7 @@
         document.getElementById('debug').textContent = message;
         console.log("Resposta do servidor:", message);
     })
-    .catch(error => {
-        document.getElementById('debug').textContent = ERRO: ${error.message};
-        console.error("Erro durante o envio:", error);
-    });
+
 });
 /*document.getElementById('myForm').addEventListener('submit', function(e) {
     e.preventDefault();
