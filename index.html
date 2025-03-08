@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados3</h2>
+    <h2>Envie seus dados31</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -32,7 +32,7 @@ document.getElementById('myForm').addEventListener('submit', async function(e) {
     try {
       debug.textContent = "Enviando dados...";
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyOYBsb-D7xFov_0iW8YNrOnA2zgh_jztOFS30LgpIbUUgi2xIlmdibYXyC95WF5yBbTA/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbyhP_tiMGIMuNxSa6lFa36N8FP2ssJ8ek_yBuTSjAkWv9JNu1dGWj_ntPGsreaBs_u9ZA/exec', {
         method: 'POST',
         body: formData,
         mode: 'cors' // Força verificação CORS
