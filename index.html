@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados agora vai!!</h2>
+    <h2>Envie seus dados vai!!</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -39,12 +39,11 @@
     const file = fileInput.files[0];
     formData.append('file', file);
 
-    // Debug visual do arquivo
-    console.log("Arquivo capturado:", {
-        name: file.name,
-        type: file.type,
-        size: file.size
-    });
+    // Debug visual do FormData
+    console.log("Dados capturados no formulário:");
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
 
     fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
         method: 'POST',
