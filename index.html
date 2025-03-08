@@ -1,107 +1,88 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html> 
+<html lang="pt-br">
 <head>
-    <title>Formulário de Upload</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportes Ari - Envio de Documentos</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 </head>
 <body>
-    <h2>Envie seus dados</h2>
-    <form id="myForm">
-        <label for="name">Nome:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
-        
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-        
-        <label for="file">Anexo (PDF/Imagem):</label><br>
-        <input type="file" id="file" name="file" accept=".pdf,.png,.jpg,.jpeg" required><br><br>
-        
-        <input type="submit" value="Enviar">
-    </form>
+    <header>
+        <img src="../static/images/logo.png" alt="Transportes Ari" class="logo">
+        <h1>Transportes Ari</h1>
+        <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
+    </header>
+    <div class="container">
+        <h2>Envio de Documentos de viagem</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="tipo">Tipo de Documento:</label>
+                <select id="tipo">
+                    <option value="Carta Frete">Carta Frete</option>
+                    <option value="Combustível">Despesa de Combustível</option>
+                    <option value="Alimentação">Despesa de Alimentação</option>
+                    <option value="Outras">Outras Despesas em geral</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="placa">Placa do Caminhão:</label>
+                <input type="text" id="placa" placeholder="Ex: ABC1B34" required>
+            </div>
+            <div class="form-group">
+                <label for="file">Arquivo:</label>
+                <input type="file" id="file" required>
+            </div>
+            <button type="submit">Enviar arquivo</button>
+        </form>
+        <div id="status"></div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Transportes Ari - Todos os direitos reservados</p>
+    </footer>
 
-    <!-- Área de debug -->
-    <h3>Mensagem do Servidor:</h3>
-    <pre id="debug"></pre>
+    <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-<script>
-    document.getElementById('myForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    formData.append('name', document.getElementById('name').value);
-    formData.append('email', document.getElementById('email').value);
-    const fileInput = document.getElementById('file');
-    
-    if (fileInput.files.length === 0) {
-        alert("Por favor, selecione um arquivo antes de enviar.");
-        return;
-    }
-    
-    const file = fileInput.files[0];
-    formData.append('file', file);
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert("Selecione um arquivo para enviar!");
+            return;
+        }
 
-    // Debug visual do FormData
-    console.log("Dados capturados no formulário:");
-    for (const [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+        const tipo = document.getElementById('tipo').value;
+        const placa = document.getElementById('placa').value;
+        const statusDiv = document.getElementById('status');
 
-    fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(message => {
-        document.getElementById('debug').textContent = message;
-        console.log("Resposta do servidor:", message);
-    })
+        const fr = new FileReader();
+        fr.readAsArrayBuffer(file);
+        fr.onload = async function (event) {
+            const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec"; // <--- Substitua pelo seu link do Apps Script
+            const data = {
+                filename: file.name,
+                mimeType: file.type,
+                fileData: [...new Int8Array(event.target.result)],
+                tipo: tipo,
+                placa: placa
+            };
 
-});
-/*document.getElementById('myForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    formData.append('name', document.getElementById('name').value);
-    formData.append('email', document.getElementById('email').value);
-    const fileInput = document.getElementById('file');
-    if (fileInput.files.length === 0) {
-        alert("Por favor, selecione um arquivo antes de enviar.");
-        return;
-    }
-    formData.append('file', fileInput.files[0]);
+            try {
+                statusDiv.innerHTML = "Enviando arquivo...";
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" }
+                });
 
-    // Debug visual dos dados
-    const debugContent = 
-        Nome: ${formData.get('name')}
-        Email: ${formData.get('email')}
-        Arquivo: ${fileInput.files[0].name}
-        Tipo: ${fileInput.files[0].type}
-        Tamanho: ${fileInput.files[0].size} bytes
-    ;
-    console.log("Dados capturados no formulário:", debugContent);
-
-    // Debug do FormData (não podemos acessar diretamente, então convertemos para texto)
-    const formDataDebug = [];
-    for (const [key, value] of formData.entries()) {
-        formDataDebug.push(${key}: ${value});
-    }
-    console.log("Conteúdo do FormData enviado:", formDataDebug.join('\n'));
-
-    fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(message => {
-        document.getElementById('debug').textContent = message;
-        console.log("Resposta do servidor:", message);
-    })
-    .catch(error => {
-        document.getElementById('debug').textContent = ERRO: ${error.message};
-        console.error("Erro durante o envio:", error);
+                const result = await response.json();
+                statusDiv.innerHTML = `Arquivo enviado com sucesso! <br> ID: ${result.fileId} <br> <a href="${result.fileUrl}" target="_blank">Abrir no Google Drive</a>`;
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerHTML = "Erro ao enviar o arquivo. Tente novamente.";
+            }
+        };
     });
-});*/
-</script>
-
-            
+    </script>
 </body>
 </html>
