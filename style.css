@@ -1,14 +1,14 @@
 /* Estilos gerais */
 body {
     background-color: #ffffff;
-    color: #003366;
+    color: #32373c;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #003366;
+    background-color: #32373c;
     color: #ffffff;
     padding: 3px; /* Reduzindo a altura do cabeçalho */
     text-align: center;
@@ -21,7 +21,7 @@ header {
 }
 
 footer {
-    background-color: #003366;
+    background-color: #32373c;
     color: #ffffff;
     padding: 1px; /* Reduzindo a altura do rodapé */
     text-align: center;
