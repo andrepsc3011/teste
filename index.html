@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -10,10 +10,10 @@
     <header>
         <img src="../static/images/logo.png" alt="Transportes Ari" class="logo">
         <h1>Transportes Ari</h1>
-        <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem</p>
+        <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem.</p>
     </header>
     <div class="container">
-        <h2>Envio de Documentos de viagem</h2>
+        <h2>Envio de Documentos de Viagem</h2>
         <form id="uploadForm" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="tipo">Tipo de Documento:</label>
@@ -21,18 +21,18 @@
                     <option value="Carta Frete">Carta Frete</option>
                     <option value="Combustível">Despesa de Combustível</option>
                     <option value="Alimentação">Despesa de Alimentação</option>
-                    <option value="Outras">Outras Despesas em geral</option>
+                    <option value="Outras">Outras Despesas em Geral</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="placa">Placa do Caminhão:</label>
-                <input type="text" id="placa" placeholder="Ex: ABC1B34" required>
+                <input type="text" id="placa" placeholder="Ex: ABC1B34">
             </div>
             <div class="form-group">
                 <label for="file">Arquivo:</label>
-                <input type="file" id="file" required>
+                <input type="file" id="file">
             </div>
-            <button type="submit">Enviar arquivo</button>
+            <button type="submit">Enviar Arquivo</button>
         </form>
         <div id="status"></div>
     </div>
@@ -41,48 +41,47 @@
     </footer>
 
     <script>
-    document.getElementById('uploadForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const fileInput = document.getElementById('file');
-        const file = fileInput.files[0];
-        if (!file) {
-            alert("Selecione um arquivo para enviar!");
-            return;
-        }
-
-        const tipo = document.getElementById('tipo').value;
-        const placa = document.getElementById('placa').value;
+        const form = document.getElementById('uploadForm');
         const statusDiv = document.getElementById('status');
 
-        const fr = new FileReader();
-        fr.readAsArrayBuffer(file);
-        fr.onload = async function (event) {
-            const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec"; // <--- Substitua pelo seu link do Apps Script
-            const data = {
-                filename: file.name,
-                mimeType: file.type,
-                fileData: [...new Int8Array(event.target.result)],
-                tipo: tipo,
-                placa: placa
-            };
+        form.addEventListener('submit', e => {
+            e.preventDefault();
 
-            try {
-                statusDiv.innerHTML = "Enviando arquivo...";
-                const response = await fetch(url, {
-                    method: "POST",
-                    body: JSON.stringify(data),
-                    headers: { "Content-Type": "application/json" }
+            const file = form.file.files[0];
+            const tipo = form.tipo.value;
+            const placa = form.placa.value;
+
+            if (!file || !tipo || !placa) {
+                statusDiv.textContent = "Por favor, preencha todos os campos.";
+                return;
+            }
+
+            const fr = new FileReader();
+            fr.readAsArrayBuffer(file);
+            fr.onload = f => {
+                const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec"; // Substitua pela URL do seu Web App
+
+                const qs = new URLSearchParams({
+                    filename: file.name,
+                    mimeType: file.type,
+                    tipo: tipo,
+                    placa: placa
                 });
 
-                const result = await response.json();
-                statusDiv.innerHTML = `Arquivo enviado com sucesso! <br> ID: ${result.fileId} <br> <a href="${result.fileUrl}" target="_blank">Abrir no Google Drive</a>`;
-            } catch (error) {
-                console.error(error);
-                statusDiv.innerHTML = "Erro ao enviar o arquivo. Tente novamente.";
-            }
-        };
-    });
+                fetch(`${url}?${qs}`, {
+                    method: "POST",
+                    body: JSON.stringify([...new Int8Array(f.target.result)])
+                })
+                .then(res => res.json())
+                .then(response => {
+                    statusDiv.innerHTML = `Arquivo enviado com sucesso! <a href="${response.fileUrl}" target="_blank">Clique aqui para acessar</a>`;
+                })
+                .catch(err => {
+                    statusDiv.textContent = "Erro ao enviar o arquivo.";
+                    console.error(err);
+                });
+            };
+        });
     </script>
 </body>
 </html>
