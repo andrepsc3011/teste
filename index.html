@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados vai!!</h2>
+    <h2>Envie seus dados vai+++!!</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -25,40 +25,46 @@
 <script>
     document.getElementById('myForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
-    const formData = new FormData();
-    formData.append('name', document.getElementById('name').value);
-    formData.append('email', document.getElementById('email').value);
+
     const fileInput = document.getElementById('file');
-    
     if (fileInput.files.length === 0) {
         alert("Por favor, selecione um arquivo antes de enviar.");
         return;
     }
-    
+
     const file = fileInput.files[0];
-    formData.append('file', file);
+    const reader = new FileReader();
 
-    // Debug visual do FormData
-    console.log("Dados capturados no formulário:");
-    for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-    }
+    reader.onloadend = function() {
+        const base64File = reader.result.split(',')[1]; // Obtém apenas os dados do Base64
 
-    fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(message => {
-        document.getElementById('debug').textContent = message;
-        console.log("Resposta do servidor:", message);
-    })
-    .catch(error => {
-        document.getElementById('debug').textContent = `ERRO: ${error.message}`;
-        console.error("Erro durante o envio:", error);
-    });
+        const data = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            file: base64File
+        };
+
+        console.log("Enviando dados:", JSON.stringify(data));
+
+        fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.text())
+        .then(message => {
+            document.getElementById('debug').textContent = message;
+            console.log("Resposta do servidor:", message);
+        })
+        .catch(error => {
+            document.getElementById('debug').textContent = `ERRO: ${error.message}`;
+            console.error("Erro durante o envio:", error);
+        });
+    };
+
+    reader.readAsDataURL(file); // Converte o arquivo para Base64
 });
+
 /*document.getElementById('myForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
