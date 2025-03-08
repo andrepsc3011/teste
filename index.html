@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportes Ari - Envio de Documentos</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Transportes Ari" class="logo">
+        <img src="../static/images/logo.png" alt="Transportes Ari" class="logo">
         <h1>Transportes Ari</h1>
         <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem.</p>
     </header>
@@ -17,7 +17,7 @@
         <form id="uploadForm" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="tipo">Tipo de Documento:</label>
-                <select id="tipo">
+                <select id="tipo" name="tipo">
                     <option value="Carta Frete">Carta Frete</option>
                     <option value="Combustível">Despesa de Combustível</option>
                     <option value="Alimentação">Despesa de Alimentação</option>
@@ -26,11 +26,20 @@
             </div>
             <div class="form-group">
                 <label for="placa">Placa do Caminhão:</label>
-                <input type="text" id="placa" placeholder="Ex: ABC1B34">
+                <input 
+                    type="text" 
+                    id="placa" 
+                    name="placa" 
+                    placeholder="Ex: ABC1B34" 
+                    maxlength="7" 
+                    pattern="[A-Za-z0-9]{7}" 
+                    required
+                >
+                <small>A placa deve ter exatamente 7 caracteres (letras e números).</small>
             </div>
             <div class="form-group">
                 <label for="file">Arquivo:</label>
-                <input type="file" id="file">
+                <input type="file" id="file" name="file" required>
             </div>
             <button type="submit">Enviar Arquivo</button>
         </form>
@@ -46,6 +55,13 @@
         const form = document.getElementById('uploadForm');
         const statusDiv = document.getElementById('status');
         const loader = document.getElementById('loader');
+        const placaInput = document.getElementById('placa');
+
+        // Função para converter o valor do campo placa para maiúsculas e validar
+        placaInput.addEventListener('input', () => {
+            let value = placaInput.value.toUpperCase(); // Converter para maiúsculas
+            placaInput.value = value.replace(/[^A-Z0-9]/g, ''); // Remover caracteres inválidos
+        });
 
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -56,6 +72,11 @@
 
             if (!file || !tipo || !placa) {
                 statusDiv.textContent = "Por favor, preencha todos os campos.";
+                return;
+            }
+
+            if (placa.length !== 7) {
+                statusDiv.textContent = "A placa deve ter exatamente 7 caracteres.";
                 return;
             }
 
