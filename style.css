@@ -69,6 +69,10 @@ button:hover {
     background-color: #002244;
 }
 
+p {
+  font-size: 8px;
+}
+
 /* Estilo para o loader */
 .loader {
     display: none; /* Inicialmente oculto */
