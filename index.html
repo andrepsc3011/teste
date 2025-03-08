@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados</h2>
+    <h2>Envie seus dados-chega</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -23,7 +23,7 @@
     <pre id="debug"></pre>
 
     <script>
-    document.getElementById('myForm').addEventListener('submit', async function(e) {
+document.getElementById('myForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
@@ -32,10 +32,14 @@
     try {
       debug.textContent = "Enviando dados...";
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyhP_tiMGIMuNxSa6lFa36N8FP2ssJ8ek_yBuTSjAkWv9JNu1dGWj_ntPGsreaBs_u9ZA/exec', {
+      // Use um proxy para contornar o CORS
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Proxy público
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhP_tiMGIMuNxSa6lFa36N8FP2ssJ8ek_yBuTSjAkWv9JNu1dGWj_ntPGsreaBs_u9ZA/exec'; // Substitua pela URL do seu script
+      
+      const response = await fetch(proxyUrl + scriptUrl, {
         method: 'POST',
         body: formData,
-        mode: 'cors' // Habilita CORS no cliente
+        mode: 'cors'
       });
       
       const text = await response.text();
