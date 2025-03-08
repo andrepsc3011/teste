@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados agora vai</h2>
+    <h2>Envie seus dados agora vai!!</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -23,7 +23,44 @@
     <pre id="debug"></pre>
 
 <script>
-document.getElementById('myForm').addEventListener('submit', function(e) {
+    document.getElementById('myForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('email', document.getElementById('email').value);
+    const fileInput = document.getElementById('file');
+    
+    if (fileInput.files.length === 0) {
+        alert("Por favor, selecione um arquivo antes de enviar.");
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    formData.append('file', file);
+
+    // Debug visual do arquivo
+    console.log("Arquivo capturado:", {
+        name: file.name,
+        type: file.type,
+        size: file.size
+    });
+
+    fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(message => {
+        document.getElementById('debug').textContent = message;
+        console.log("Resposta do servidor:", message);
+    })
+    .catch(error => {
+        document.getElementById('debug').textContent = `ERRO: ${error.message}`;
+        console.error("Erro durante o envio:", error);
+    });
+});
+/*document.getElementById('myForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData();
@@ -66,7 +103,7 @@ document.getElementById('myForm').addEventListener('submit', function(e) {
         document.getElementById('debug').textContent = `ERRO: ${error.message}`;
         console.error("Erro durante o envio:", error);
     });
-});
+});*/
 </script>
 
             
