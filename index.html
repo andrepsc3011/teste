@@ -43,7 +43,7 @@
                 <label for="file">Arquivo:</label>
                 <input type="file" id="file" name="file" required>
             </div>
-            <button type="submit">Enviar Arquivo</button>
+            <button type="submit" id="submitButton">Enviar Arquivo</button>
         </form>
         <!-- Loader -->
         <div class="loader" id="loader"></div>
@@ -55,67 +55,58 @@
 
     <script>
         const form = document.getElementById('uploadForm');
-        const statusDiv = document.getElementById('status');
-        const loader = document.getElementById('loader');
-        const placaInput = document.getElementById('placa');
+const statusDiv = document.getElementById('status');
+const loader = document.getElementById('loader');
+const submitButton = document.getElementById('submitButton'); // Referência ao botão
 
-        // Função para converter o valor do campo placa para maiúsculas e validar
-        placaInput.addEventListener('input', () => {
-            let value = placaInput.value.toUpperCase(); // Converter para maiúsculas
-            placaInput.value = value.replace(/[^A-Z0-9]/g, ''); // Remover caracteres inválidos
+form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const file = form.file.files[0];
+    const tipo = form.tipo.value;
+    const placa = form.placa.value;
+
+    if (!file || !tipo || !placa) {
+        statusDiv.textContent = "Por favor, preencha todos os campos.";
+        return;
+    }
+
+    // Bloquear o botão e exibir o loader
+    submitButton.disabled = true; // Desabilita o botão
+    loader.style.display = "block";
+    statusDiv.textContent = ""; // Limpar mensagens anteriores
+
+    const fr = new FileReader();
+    fr.readAsArrayBuffer(file);
+    fr.onload = f => {
+        const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec"; // Substitua pela URL do seu Web App
+
+        const qs = new URLSearchParams({
+            filename: file.name,
+            mimeType: file.type,
+            tipo: tipo,
+            placa: placa
         });
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            const file = form.file.files[0];
-            const tipo = form.tipo.value;
-            const placa = form.placa.value;
-
-            if (!file || !tipo || !placa) {
-                statusDiv.textContent = "Por favor, preencha todos os campos.";
-                return;
-            }
-
-            if (placa.length !== 7) {
-                statusDiv.textContent = "A placa deve ter exatamente 7 caracteres.";
-                return;
-            }
-
-            // Exibir o loader
-            loader.style.display = "block";
-            statusDiv.textContent = ""; // Limpar mensagens anteriores
-
-            const fr = new FileReader();
-            fr.readAsArrayBuffer(file);
-            fr.onload = f => {
-                const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec"; // Substitua pela URL do seu Web App
-
-                const qs = new URLSearchParams({
-                    filename: file.name,
-                    mimeType: file.type,
-                    tipo: tipo,
-                    placa: placa
-                });
-
-                fetch(`${url}?${qs}`, {
-                    method: "POST",
-                    body: JSON.stringify([...new Int8Array(f.target.result)])
-                })
-                .then(res => res.json())
-                .then(response => {
-                    statusDiv.innerHTML = `Arquivo enviado com sucesso! <a href="${response.fileUrl}" target="_blank">Clique aqui para acessar</a>`;
-                })
-                .catch(err => {
-                    statusDiv.textContent = "Erro ao enviar o arquivo.";
-                    console.error(err);
-                })
-                .finally(() => {
-                    // Ocultar o loader após a conclusão
-                    loader.style.display = "none";
-                });
-            };
+        fetch(`${url}?${qs}`, {
+            method: "POST",
+            body: JSON.stringify([...new Int8Array(f.target.result)])
+        })
+        .then(res => res.json())
+        .then(response => {
+            statusDiv.innerHTML = `Arquivo enviado com sucesso! <a href="${response.fileUrl}" target="_blank">Clique aqui para acessar</a>`;
+        })
+        .catch(err => {
+            statusDiv.textContent = "Erro ao enviar o arquivo.";
+            console.error(err);
+        })
+        .finally(() => {
+            // Liberar o botão e ocultar o loader após a conclusão
+            submitButton.disabled = false; // Habilita o botão novamente
+            loader.style.display = "none";
         });
+    };
+});
     </script>
 </body>
 </html>
