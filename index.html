@@ -4,7 +4,7 @@
     <title>Formulário de Upload</title>
 </head>
 <body>
-    <h2>Envie seus dados já</h2>
+    <h2>Envie seus dados agora vai</h2>
     <form id="myForm">
         <label for="name">Nome:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -44,7 +44,14 @@ document.getElementById('myForm').addEventListener('submit', function(e) {
         Tipo: ${fileInput.files[0].type}
         Tamanho: ${fileInput.files[0].size} bytes
     `;
-    console.log(debugContent);
+    console.log("Dados capturados no formulário:", debugContent);
+
+    // Debug do FormData (não podemos acessar diretamente, então convertemos para texto)
+    const formDataDebug = [];
+    for (const [key, value] of formData.entries()) {
+        formDataDebug.push(`${key}: ${value}`);
+    }
+    console.log("Conteúdo do FormData enviado:", formDataDebug.join('\n'));
 
     fetch('https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec', { // Substitua pela URL do seu script
         method: 'POST',
@@ -53,9 +60,11 @@ document.getElementById('myForm').addEventListener('submit', function(e) {
     .then(response => response.text())
     .then(message => {
         document.getElementById('debug').textContent = message;
+        console.log("Resposta do servidor:", message);
     })
     .catch(error => {
         document.getElementById('debug').textContent = `ERRO: ${error.message}`;
+        console.error("Erro durante o envio:", error);
     });
 });
 </script>
