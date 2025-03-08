@@ -1,3 +1,4 @@
+/* Estilos gerais */
 body {
     background-color: #ffffff;
     color: #003366;
@@ -9,7 +10,7 @@ body {
 header {
     background-color: #003366;
     color: #ffffff;
-    padding: 3px; /* Reduzindo a altura do cabe�alho */
+    padding: 3px; /* Reduzindo a altura do cabeçalho */
     text-align: center;
 }
 
@@ -22,7 +23,7 @@ header {
 footer {
     background-color: #003366;
     color: #ffffff;
-    padding: 1px; /* Reduzindo a altura do rodap� */
+    padding: 1px; /* Reduzindo a altura do rodapé */
     text-align: center;
     position: fixed;
     width: 100%;
@@ -66,4 +67,22 @@ button {
 
 button:hover {
     background-color: #002244;
+}
+
+/* Estilo para o loader */
+.loader {
+    display: none; /* Inicialmente oculto */
+    border: 4px solid #f3f3f3; /* Cor de fundo */
+    border-top: 4px solid #3498db; /* Cor da animação */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+/* Animação do loader */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
