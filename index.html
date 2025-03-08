@@ -4,11 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportes Ari - Envio de Documentos</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <style>
+        /* Estilo para o loader */
+        .loader {
+            display: none; /* Inicialmente oculto */
+            border: 4px solid #f3f3f3; /* Cor de fundo */
+            border-top: 4px solid #3498db; /* Cor da animação */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        /* Animação do loader */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Centralizar o loader */
+        .container {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Transportes Ari" class="logo">
+        <img src="../images/logo.png" alt="Transportes Ari" class="logo">
         <h1>Transportes Ari</h1>
         <p>Olá amigo motorista, como estão? Criamos esta aplicação para ficar mais prático e rápido para enviarem as despesas de viagem.</p>
     </header>
@@ -34,6 +58,8 @@
             </div>
             <button type="submit">Enviar Arquivo</button>
         </form>
+        <!-- Loader -->
+        <div class="loader" id="loader"></div>
         <div id="status"></div>
     </div>
     <footer>
@@ -43,6 +69,7 @@
     <script>
         const form = document.getElementById('uploadForm');
         const statusDiv = document.getElementById('status');
+        const loader = document.getElementById('loader');
 
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -55,6 +82,10 @@
                 statusDiv.textContent = "Por favor, preencha todos os campos.";
                 return;
             }
+
+            // Exibir o loader
+            loader.style.display = "block";
+            statusDiv.textContent = ""; // Limpar mensagens anteriores
 
             const fr = new FileReader();
             fr.readAsArrayBuffer(file);
@@ -79,6 +110,10 @@
                 .catch(err => {
                     statusDiv.textContent = "Erro ao enviar o arquivo.";
                     console.error(err);
+                })
+                .finally(() => {
+                    // Ocultar o loader após a conclusão
+                    loader.style.display = "none";
                 });
             };
         });
