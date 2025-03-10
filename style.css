@@ -23,7 +23,7 @@ header {
 footer {
     background-color: #32373c;
     color: #ffffff;
-    font-size: 5px;
+    font-size: 8px;
     padding: 1px; /* Reduzindo a altura do rodapé */
     text-align: center;
     position: fixed;
