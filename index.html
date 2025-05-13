@@ -27,17 +27,15 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="placa">Placa do Caminhão:</label>
+                <label for="placa">Número da viagem:</label>
                 <input 
                     type="text" 
-                    id="placa" 
-                    name="placa" 
-                    placeholder="Ex: ABC1B34" 
-                    maxlength="7" 
-                    pattern="[A-Za-z0-9]{7}" 
+                    id="num_viagem" 
+                    name="num_viagem" 
+                    placeholder="Ex: 25/00000" 
+                    maxlength="10" 
                     required
                 >
-                <small>A placa deve ter exatamente 7 caracteres (letras e números).</small>
             </div>
             <div class="form-group">
                 <label for="file">Arquivo:</label>
@@ -64,10 +62,10 @@
     
         const file = form.file.files[0];
         const tipo = form.tipo.value;
-        const placa = form.placa.value;
+        const placa = form.num_viagem.value;
     
         // Validar campos obrigatórios
-        if (!file || !tipo || !placa) {
+        if (!file || !tipo || !num_viagem) {
             statusDiv.textContent = "Por favor, preencha todos os campos.";
             return;
         }
@@ -93,7 +91,7 @@
                 filename: file.name,
                 mimeType: file.type,
                 tipo: tipo,
-                placa: placa
+                num_viagem: num_viagem
             });
     
             fetch(`${url}?${qs}`, {
