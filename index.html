@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Link para a fonte Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <title>Transportes Ari - Envio de Documentos</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 </head>
 <body>
     <header>
         <img src="logo.png" alt="Transportes Ari" class="logo">
-        <!--h1>Transportes Ari</h1-->
         <p>Olá amigo motorista, como está? Criamos esta aplicação para ficar mais prático e rápido para enviar as despesas de viagem.</p>
     </header>
+
     <div class="container">
         <h2>Envio de Documentos de Viagem</h2>
         <form id="uploadForm" enctype="multipart/form-data">
@@ -28,14 +28,7 @@
             </div>
             <div class="form-group">
                 <label for="placa">Número da viagem:</label>
-                <input 
-                    type="text" 
-                    id="num_viagem" 
-                    name="num_viagem" 
-                    placeholder="Ex: 25/00000" 
-                    maxlength="10" 
-                    required
-                >
+                <input type="text" id="num_viagem" name="num_viagem" placeholder="Ex: 25/00000" maxlength="10" required>
             </div>
             <div class="form-group">
                 <label for="file">Arquivo:</label>
@@ -43,10 +36,11 @@
             </div>
             <button type="submit" id="submitButton">Enviar Arquivo</button>
         </form>
-        <!-- Loader -->
+
         <div class="loader" id="loader"></div>
         <div id="status"></div>
     </div>
+
     <footer>
         <p>&copy; 2025 Transportes Ari - Todos os direitos reservados</p>
     </footer>
@@ -55,63 +49,91 @@
     const form = document.getElementById('uploadForm');
     const statusDiv = document.getElementById('status');
     const loader = document.getElementById('loader');
-    const submitButton = document.getElementById('submitButton'); // Referência ao botão
+    const submitButton = document.getElementById('submitButton');
 
-    form.addEventListener('submit', e => {
+    async function convertPdfToImage(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2 });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const context = canvas.getContext("2d");
+
+        await page.render({ canvasContext: context, viewport }).promise;
+        const dataUrl = canvas.toDataURL("image/jpeg");
+
+        const blob = await (await fetch(dataUrl)).blob();
+        const newFileName = file.name.replace(/\.pdf$/i, ".jpg");
+        return new File([blob], newFileName, { type: "image/jpeg" });
+    }
+
+    form.addEventListener('submit', async e => {
         e.preventDefault();
-    
-        const file = form.file.files[0];
+
+        let file = form.file.files[0];
         const tipo = form.tipo.value;
         const num_viagem = form.num_viagem.value;
-    
-        // Validar campos obrigatórios
+
         if (!file || !tipo || !num_viagem) {
             statusDiv.textContent = "Por favor, preencha todos os campos.";
             return;
         }
-    
-        // Validar tipo de arquivo
+
         const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
         if (!allowedTypes.includes(file.type)) {
             statusDiv.textContent = "O arquivo deve ser um PDF ou uma imagem (JPEG, PNG).";
             return;
         }
-    
-        // Bloquear o botão e exibir o loader
-        submitButton.disabled = true; // Desabilita o botão
+
+        submitButton.disabled = true;
         loader.style.display = "block";
-        statusDiv.textContent = ""; // Limpar mensagens anteriores
-    
-        const fr = new FileReader();
-        fr.readAsArrayBuffer(file);
-        fr.onload = f => {
-            const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec";
-    
-            const qs = new URLSearchParams({
-                filename: file.name,
-                mimeType: file.type,
-                tipo: tipo,
-                num_viagem: num_viagem
-            });
-    
-            fetch(`${url}?${qs}`, {
-                method: "POST",
-                body: JSON.stringify([...new Int8Array(f.target.result)])
-            })
-            .then(res => res.json())
-            .then(response => {
-                statusDiv.innerHTML = `Arquivo enviado com sucesso! <a href="${response.fileUrl}" target="_blank">Clique aqui para acessar</a>`;
-            })
-            .catch(err => {
-                statusDiv.textContent = "Erro ao enviar o arquivo.";
-                console.error(err);
-            })
-            .finally(() => {
-                // Liberar o botão e ocultar o loader após a conclusão
-                submitButton.disabled = false; // Habilita o botão novamente
-                loader.style.display = "none";
-            });
-        };
+        statusDiv.textContent = "";
+
+        try {
+            // Se for PDF, converter para imagem
+            if (file.type === "application/pdf") {
+                file = await convertPdfToImage(file);
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (f) {
+                const url = "https://script.google.com/macros/s/AKfycbzYLPhuIzpr4YhsMU00WIo4OI5HmLLt2_zrwJquhYWuGJi5LvtgtbPfDYOvlEPo9Gm6/exec";
+
+                const qs = new URLSearchParams({
+                    filename: file.name,
+                    mimeType: file.type,
+                    tipo: tipo,
+                    num_viagem: num_viagem
+                });
+
+                fetch(`${url}?${qs}`, {
+                    method: "POST",
+                    body: JSON.stringify([...new Int8Array(f.target.result)])
+                })
+                .then(res => res.json())
+                .then(response => {
+                    statusDiv.innerHTML = `Arquivo enviado com sucesso! <a href="${response.fileUrl}" target="_blank">Clique aqui para acessar</a>`;
+                })
+                .catch(err => {
+                    statusDiv.textContent = "Erro ao enviar o arquivo.";
+                    console.error(err);
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    loader.style.display = "none";
+                });
+            };
+
+            reader.readAsArrayBuffer(file);
+        } catch (err) {
+            statusDiv.textContent = "Erro ao processar o arquivo.";
+            console.error(err);
+            submitButton.disabled = false;
+            loader.style.display = "none";
+        }
     });
     </script>
 </body>
